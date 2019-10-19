@@ -66,6 +66,7 @@ then
 	echo "Failed to create jail"
 	exit 1
 fi
+rm /tmp/pkg.json
 
 iocage exec "${JAIL_NAME}" mkdir /config
 iocage exec "${JAIL_NAME}" mkdir /configs
@@ -76,7 +77,6 @@ mkdir -p "${PLEX_CONFIG_PATH}"
 chown -R 972:972 "${PLEX_CONFIG_PATH}"
 iocage fstab -a "${JAIL_NAME}" "${PLEX_CONFIG_PATH}" /config nullfs rw 0 0
 iocage fstab -a "${JAIL_NAME}" "${CONFIGS_PATH}" /configs nullfs rw 0 0
-iocage exec "${JAIL_NAME}" export ASSUME_ALWAYS_YES=yes
 if [ $USE_PLEXPASS -eq 1 ]; then
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_enable="YES"
   iocage exec "${JAIL_NAME}" plexmediaserver_plexpass_support_path="/config"
@@ -89,6 +89,8 @@ fi
 iocage exec "${JAIL_NAME}" crontab /configs/update_packages
 iocage fstab -r "${JAIL_NAME}" "${CONFIGS_PATH}" /configs nullfs rw 0 0
 iocage exec "${JAIL_NAME}" rm -rf /configs
+iocage exec "${JAIL_NAME}" pkg upgrade -y
+iocage restart "${JAIL_NAME}"
 
 echo "Installation Complete!"
 echo "Log in and configure your server by browsing to:"
