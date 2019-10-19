@@ -1,0 +1,3 @@
+#!/bin/sh
+#Upgrade all installed packages and restart Plex
+18 3 * * 0 pkg upgrade -y && service plexmediaserver restart
