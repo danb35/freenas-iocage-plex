@@ -80,14 +80,16 @@ iocage exec "${JAIL_NAME}" export ASSUME_ALWAYS_YES=yes
 if [ $USE_PLEXPASS -eq 1 ]; then
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_enable="YES"
   iocage exec "${JAIL_NAME}" plexmediaserver_plexpass_support_path="/config"
-  iocage exec "${JAIL_NAME}" service plexmediaserver-plexpass start
 else
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_enable="YES"
   iocage exec "${JAIL_NAME}" plexmediaserver_support_path="/config"
-  iocage exec "${JAIL_NAME}" service plexmediaserver start
   sed -i '' "s/-plexpass//" "${CONFIGS_PATH}"/update_packages
 fi
 
 iocage exec "${JAIL_NAME}" crontab /configs/update_packages
 iocage fstab -r "${JAIL_NAME}" "${CONFIGS_PATH}" /configs nullfs rw 0 0
 iocage exec "${JAIL_NAME}" rm -rf /configs
+
+echo "Installation Complete!"
+echo "Log in and configure your server by browsing to:"
+echo "http://$JAIL_IP:32400/web"
