@@ -69,9 +69,9 @@ fi
 
 iocage exec "${JAIL_NAME}" mkdir /config
 iocage exec "${JAIL_NAME}" mkdir /configs
-iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/pkg
-iocage exec "${JAIL_NAME}" cp /etc/pkg/FreeBSD.conf /usr/local/etc/pkg/
-iocage exec "${JAIL_NAME}" sed -i '' "s/quarterly/latest/" /usr/local/etc/pkg/FreeBSD.conf
+iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/pkg/repos
+iocage exec "${JAIL_NAME}" cp /etc/pkg/FreeBSD.conf /usr/local/etc/pkg/repos/
+iocage exec "${JAIL_NAME}" sed -i '' "s/quarterly/latest/" /usr/local/etc/pkg/repos/FreeBSD.conf
 mkdir -p "${PLEX_CONFIG_PATH}"
 chown -R 972:972 "${PLEX_CONFIG_PATH}"
 iocage fstab -a "${JAIL_NAME}" "${PLEX_CONFIG_PATH}" /config nullfs rw 0 0
