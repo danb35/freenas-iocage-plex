@@ -15,7 +15,7 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "${SCRIPT}")
 . "${SCRIPTPATH}"/plex-config
 CONFIGS_PATH="${SCRIPTPATH}"/configs
-RELEASE=$(freebsd-version | sed "s/STABLE/RELEASE/g")
+RELEASE=$(freebsd-version | sed "s/STABLE/RELEASE/g" | sed "s/-p[0-9]*//")
 
 # Check for nextcloud-config and set configuration
 if ! [ -e "${SCRIPTPATH}"/plex-config ]; then
@@ -79,10 +79,10 @@ iocage fstab -a "${JAIL_NAME}" "${PLEX_CONFIG_PATH}" /config nullfs rw 0 0
 iocage fstab -a "${JAIL_NAME}" "${CONFIGS_PATH}" /configs nullfs rw 0 0
 if [ $USE_PLEXPASS -eq 1 ]; then
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_enable="YES"
-  iocage exec "${JAIL_NAME}" plexmediaserver_plexpass_support_path="/config"
+  iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_support_path="/config"
 else
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_enable="YES"
-  iocage exec "${JAIL_NAME}" plexmediaserver_support_path="/config"
+  iocage exec "${JAIL_NAME}" sysrc plexmediaserver_support_path="/config"
   sed -i '' "s/-plexpass//" "${CONFIGS_PATH}"/update_packages
 fi
 
