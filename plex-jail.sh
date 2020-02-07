@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build an iocage jail under FreeNAS 11.2 using the current release of Plex Media Server
+# Build an iocage jail under FreeNAS 11.2/11.3 using the current release of Plex Media Server
 # https://github.com/danb35/freenas-iocage-plex
 
 JAIL_IP=""
@@ -17,13 +17,13 @@ SCRIPTPATH=$(dirname "${SCRIPT}")
 CONFIGS_PATH="${SCRIPTPATH}"/configs
 RELEASE=$(freebsd-version | sed "s/STABLE/RELEASE/g" | sed "s/-p[0-9]*//")
 
-# Check for nextcloud-config and set configuration
+# Check for plex-config and set configuration
 if ! [ -e "${SCRIPTPATH}"/plex-config ]; then
   echo "${SCRIPTPATH}/plex-config must exist."
   exit 1
 fi
 
-# Check that necessary variables were set by nextcloud-config
+# Check that necessary variables were set by plex-config
 if [ -z "${JAIL_IP}" ]; then
   echo 'Configuration error: JAIL_IP must be set'
   exit 1
