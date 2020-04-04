@@ -4,12 +4,16 @@
 
 JAIL_IP=""
 DEFAULT_GW_IP=""
-INTERFACE="vnet0"
+NETMASK=""
 VNET="on"
 POOL_PATH=""
 PLEX_CONFIG_PATH=""
-JAIL_NAME="plex"
+# BUGBUG In FreeNAS 11.3-U1, a 'plex' jail would not install pkg; any other name would
+# Until I understand how and why, side-stepping the issue with a default name of 'pms'
+JAIL_NAME="pms"
 USE_PLEXPASS=0
+USE_BASEJAIL="-b"
+PLEXPKG=""
 
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "${SCRIPT}")
@@ -32,41 +36,37 @@ if [ -z "${DEFAULT_GW_IP}" ]; then
   echo 'Configuration error: DEFAULT_GW_IP must be set'
   exit 1
 fi
+if [ -z "${NETMASK}" ]; then
+  echo 'Netmask not set, defaulting to /24 (255.255.255.0)'
+  NETMASK="24"
+fi
+
 if [ -z "${POOL_PATH}" ]; then
   echo 'Configuration error: POOL_PATH must be set'
   exit 1
 fi
-
 # If PLEX_CONFIG_PATH isn't specified in plex-config, set it
 if [ -z "${PLEX_CONFIG_PATH}" ]; then
+  echo "Plex metadata path not set, defaulting to ${POOL_PATH}/plex_data"
   PLEX_CONFIG_PATH="${POOL_PATH}"/plex_data
 fi
 
 if [ $USE_PLEXPASS -eq 1 ]; then
-	cat <<__EOF__ >/tmp/pkg.json
-	{
-	  "pkgs":[
-	  "plexmediaserver-plexpass"
-	  ]
-	}
-__EOF__
+	echo "Using beta-release plexmediaserver code as directed"
+	PLEXPKG="plexmediaserver_plexpass"
 else
-	cat <<__EOF__ >/tmp/pkg.json
-	{
-	  "pkgs":[
-	  "plexmediaserver"
-	  ]
-	}
-__EOF__
+	echo "Using stable-release plexmediaserver code"
+	PLEXPKG="plexmediaserver"
 fi
 
 # Create jail
-if ! iocage create --name "${JAIL_NAME}" -p /tmp/pkg.json -r "${RELEASE}" ip4_addr="${INTERFACE}|${JAIL_IP}/24" defaultrouter="${DEFAULT_GW_IP}" boot="on" host_hostname="${JAIL_NAME}" vnet="${VNET}"
+# BUGBUG Issue with devfs in FreeNAS 11.3-U1, restarting helps
+service devfs restart
+if ! iocage create --name "${JAIL_NAME}" -r "${RELEASE}" ip4_addr="${JAIL_IP}/${NETMASK}" defaultrouter="${DEFAULT_GW_IP}" boot="on" host_hostname="${JAIL_NAME}" vnet="${VNET}" ${USE_BASEJAIL}
 then
 	echo "Failed to create jail"
 	exit 1
 fi
-rm /tmp/pkg.json
 
 iocage exec "${JAIL_NAME}" mkdir /config
 iocage exec "${JAIL_NAME}" mkdir /configs
@@ -77,6 +77,15 @@ mkdir -p "${PLEX_CONFIG_PATH}"
 chown -R 972:972 "${PLEX_CONFIG_PATH}"
 iocage fstab -a "${JAIL_NAME}" "${PLEX_CONFIG_PATH}" /config nullfs rw 0 0
 iocage fstab -a "${JAIL_NAME}" "${CONFIGS_PATH}" /configs nullfs rw 0 0
+iocage exec "${JAIL_NAME}" cp /configs/pkg.conf /usr/local/etc
+if ! iocage exec "${JAIL_NAME}" pkg install ${PLEXPKG}
+then
+	echo "Failed to install ${PLEXPKG} package"
+	iocage stop "${JAIL_NAME}"
+	iocage destroy -f "${JAIL_NAME}"
+	exit 1
+fi
+iocage exec "${JAIL_NAME}" rm /usr/local/etc/pkg.conf
 if [ $USE_PLEXPASS -eq 1 ]; then
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_enable="YES"
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_support_path="/config"
@@ -89,7 +98,6 @@ fi
 iocage exec "${JAIL_NAME}" crontab /configs/update_packages
 iocage fstab -r "${JAIL_NAME}" "${CONFIGS_PATH}" /configs nullfs rw 0 0
 iocage exec "${JAIL_NAME}" rm -rf /configs
-iocage exec "${JAIL_NAME}" pkg upgrade -y
 iocage restart "${JAIL_NAME}"
 
 echo "Installation Complete!"
