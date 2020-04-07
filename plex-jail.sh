@@ -86,7 +86,7 @@ then
 	exit 1
 fi
 iocage exec "${JAIL_NAME}" rm /usr/local/etc/pkg.conf
-if [ $USE_PLEXPASS -eq 1 ]; then
+if [ $USE_BETA -eq 1 ]; then
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_enable="YES"
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_plexpass_support_path="/config"
 else
