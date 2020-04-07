@@ -8,10 +8,13 @@ NETMASK=""
 VNET="on"
 POOL_PATH=""
 PLEX_CONFIG_PATH=""
+INTERFACE="vnet0"
 # BUGBUG In FreeNAS 11.3-U1, a 'plex' jail would not install pkg; any other name would
-# Until I understand how and why, side-stepping the issue with a default name of 'pms'
+# This was caused by the presence of another jail that had been named 'plex' at one
+# point. Might be CPE or FreeNAS. Since this script is used to migrate data off an
+# old plugin, side-stepping issue by naming jail 'pms'.  
 JAIL_NAME="pms"
-USE_PLEXPASS=0
+USE_BETA=0
 USE_BASEJAIL="-b"
 PLEXPKG=""
 
@@ -51,18 +54,15 @@ if [ -z "${PLEX_CONFIG_PATH}" ]; then
   PLEX_CONFIG_PATH="${POOL_PATH}"/plex_data
 fi
 
-if [ $USE_PLEXPASS -eq 1 ]; then
-	echo "Using beta-release plexmediaserver code as directed"
+if [ $USE_BETA -eq 1 ]; then
+	echo "Using beta-release plexmediaserver code"
 	PLEXPKG="plexmediaserver_plexpass"
 else
 	echo "Using stable-release plexmediaserver code"
 	PLEXPKG="plexmediaserver"
 fi
-
 # Create jail
-# BUGBUG Issue with devfs in FreeNAS 11.3-U1, restarting helps
-service devfs restart
-if ! iocage create --name "${JAIL_NAME}" -r "${RELEASE}" ip4_addr="${JAIL_IP}/${NETMASK}" defaultrouter="${DEFAULT_GW_IP}" boot="on" host_hostname="${JAIL_NAME}" vnet="${VNET}" ${USE_BASEJAIL}
+if ! iocage create --name "${JAIL_NAME}" -r "${RELEASE}" ip4_addr="${INTERFACE}|${JAIL_IP}/${NETMASK}" defaultrouter="${DEFAULT_GW_IP}" boot="on" host_hostname="${JAIL_NAME}" vnet="${VNET}" ${USE_BASEJAIL}
 then
 	echo "Failed to create jail"
 	exit 1

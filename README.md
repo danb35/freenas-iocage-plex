@@ -20,7 +20,7 @@ These values must be set.  They correspond to:
 
 Optional configuration values include:
 
-* USE_PLEXPASS - If set to 1, the script will download and install the beta version of Plex Media Server. Note that all PlexPass features are available in the stable version, as well. Defaults to 0.
+* USE_BETA - If set to 1, the script will download and install the beta version of Plex Media Server.  Defaults to 0.
 * PLEX_CONFIG_PATH - The path to store your Plex metadata and configuration.  Defaults to `$POOL_PATH/plex_data`.
 * NETMASK - The netmask, in bits, for the network the Plex jail will be on. Defaults to '24', which is '255.255.255.0'.
 
@@ -30,4 +30,4 @@ Note that if the script creates $PLEX_CONFIG_PATH, it will create it as a **dire
 
 Once you've prepared the configuration file, run the script by running `./plex-jail.sh`.  It should run for a few minutes and report completion.  You can then add storage to your jail as desired (see [Uncle Fester's Guide](https://www.familybrown.org/dokuwiki/doku.php?id=fester112:jails_plex#configure_a_mount_point) for one example), and log in to configure your media server.
 
-Note that if you are interested in using hardware transcode, there are [instructions for setting this up in FreeNAS 11.3](https://github.com/kern2011/Freenas-Quicksync).
+Note that if you are interested in hardware transcode, instructions for setting this up in FreeNAS 11.3 can be found at https://github.com/kern2011/Freenas-Quicksync .
