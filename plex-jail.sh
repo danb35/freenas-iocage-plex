@@ -92,7 +92,7 @@ if [ $USE_BETA -eq 1 ]; then
 else
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_enable="YES"
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_support_path="/config"
-  sed -i '' "s/-plexpass//" "${CONFIGS_PATH}"/update_packages
+  sed -i '' "s/_plexpass//" "${CONFIGS_PATH}"/update_packages
 fi
 
 iocage exec "${JAIL_NAME}" crontab /configs/update_packages
