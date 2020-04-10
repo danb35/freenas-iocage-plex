@@ -92,12 +92,14 @@ if [ $USE_BETA -eq 1 ]; then
 else
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_enable="YES"
   iocage exec "${JAIL_NAME}" sysrc plexmediaserver_support_path="/config"
-  sed -i '' "s/_plexpass//" "${CONFIGS_PATH}"/update_packages
+  iocage exec "${JAIL_NAME}" cp -f /configs/update_packages /tmp/update_packages
+  iocage exec "${JAIL_NAME}" sed -i '' "s/_plexpass//" /tmp/update_packages
+
 fi
 
-iocage exec "${JAIL_NAME}" crontab /configs/update_packages
+iocage exec "${JAIL_NAME}" crontab /tmp/update_packages
 iocage fstab -r "${JAIL_NAME}" "${CONFIGS_PATH}" /configs nullfs rw 0 0
-iocage exec "${JAIL_NAME}" rm -rf /configs
+iocage exec "${JAIL_NAME}" rm -rf /configs /tmp/update_packages
 iocage restart "${JAIL_NAME}"
 
 echo "Installation Complete!"
