@@ -20,9 +20,11 @@ These values must be set.  They correspond to:
 
 Optional configuration values include:
 
-* USE_BETA - If set to 1, the script will download and install the beta version of Plex Media Server.  Defaults to 0.
+* PLEX_MEDIA_PATH - The path your Plex media files are located in. If set, this script will mount this directory on `/media` inside the jail. Specify a full path, for example "/mnt/tank/Media".
+* USE_HW_TRANSCODE - If set to 1, the script will attempt to configure your system for hardware transcode in Plex. Defaults to 0. Please note that your hardware has to support hardware transcode, and that setting this variable will create a startup script and load a driver. Please see the bottom of this README file for a link to hardware requirements and instructions for Plex hardware transcode on FreeNAS.
 * PLEX_CONFIG_PATH - The path to store your Plex metadata and configuration.  Defaults to `$POOL_PATH/plex_data`.
-* NETMASK - The netmask, in bits, for the network the Plex jail will be on. Defaults to '24', which is '255.255.255.0'.
+* NETMASK - The netmask, in bits, for the network the Plex jail will be on. Defaults to `24`, which is `255.255.255.0`.
+* USE_BETA - If set to 1, the script will download and install the beta version of Plex Media Server.  Defaults to 0.
 
 $PLEX_CONFIG_PATH need not exist before running this script; if it doesn't, the script will create it.  The script will also set ownership of that directory to the user/group IDs for Plex Media Server.  If this directory already exists, it **must not** be using Windows permissions.
 
