@@ -156,7 +156,7 @@ fi
 
 if [ $USE_BETA -eq 1 ]; then
 	echo "Using beta-release plexmediaserver code"
-	PLEXPKG="plexmediaserver_plexpass"
+	PLEXPKG="plexmediaserver-plexpass"
 else
 	echo "Using stable-release plexmediaserver code"
 	PLEXPKG="plexmediaserver"
