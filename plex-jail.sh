@@ -101,7 +101,7 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "${SCRIPT}")
 . "${SCRIPTPATH}"/plex-config
 CONFIGS_PATH="${SCRIPTPATH}"/configs
-RELEASE=$(freebsd-version | sed "s/STABLE/RELEASE/g" | sed "s/-p[0-9]*//")
+RELEASE=$(freebsd-version | cut -d - -f -1)"-RELEASE"
 
 # Check for plex-config and set configuration
 if ! [ -e "${SCRIPTPATH}"/plex-config ]; then
