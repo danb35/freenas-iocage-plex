@@ -39,7 +39,7 @@ createrulesetscript() {
     echo "This script only knows how to enable hardware transcode in FreeNAS 11.3 and TrueNAS 12.0"
     return 1
   fi
-  IGPU_MODEL=$(lspci | grep Intel | grep Graphics) 
+  IGPU_MODEL=$(lspci -q | grep Intel | grep Graphics) 
   if [ ! -z "${IGPU_MODEL}" ] ; then
     echo "Found Intel GPU model " ${IGPU_MODEL} ", this bodes well."
     if [ -z "$(kldstat | grep i915kms.ko)" ] ; then
