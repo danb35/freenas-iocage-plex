@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build an iocage jail under FreeNAS 11.2/11.3 using the current release of Plex Media Server
+# Build an iocage jail under TrueNAS CORE 13.3 using the current release of Plex Media Server
 # https://github.com/danb35/freenas-iocage-plex
 
 JAIL_IP=""
@@ -102,9 +102,9 @@ SCRIPTPATH=$(dirname "${SCRIPT}")
 . "${SCRIPTPATH}"/plex-config
 CONFIGS_PATH="${SCRIPTPATH}"/configs
 RELEASE=$(freebsd-version | cut -d - -f -1)"-RELEASE"
-# If release is 13.1-RELEASE, change to 13.2-RELEASE
-if [ "${RELEASE}" = "13.1-RELEASE" ]; then
-  RELEASE="13.2-RELEASE"
+# If release is 13.3-RELEASE, change to 13.4-RELEASE
+if [ "${RELEASE}" = "13.3-RELEASE" ]; then
+  RELEASE="13.4-RELEASE"
 fi 
 
 # Check for plex-config and set configuration
@@ -175,6 +175,7 @@ fi
 
 iocage exec "${JAIL_NAME}" mkdir /config
 iocage exec "${JAIL_NAME}" mkdir /configs
+iocage exec "${JAIL_NAME}" chmod 777 /tmp
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/pkg/repos
 iocage exec "${JAIL_NAME}" cp /etc/pkg/FreeBSD.conf /usr/local/etc/pkg/repos/
 iocage exec "${JAIL_NAME}" sed -i '' "s/quarterly/latest/" /usr/local/etc/pkg/repos/FreeBSD.conf

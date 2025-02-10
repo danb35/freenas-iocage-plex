@@ -1,6 +1,9 @@
 # freenas-iocage-plex
 Scripted installation of Plex Media Server in a FreeNAS jail
 
+## Status
+This script is only expected to work under TrueNAS CORE 13.3; any earlier TrueNAS release is based on an EOL release of FreeBSD.
+
 ## Description
 This is a simple script to automate installation of Plex Media Server in a FreeNAS jail, following current best practices.  It will create a jail, install Plex Media Server (with or without PlexPass), configure Plex to store its preferences and metadata outside the jail, and create a cron job to update the installed packages every week using the FreeBSD `latest` repository rather than `quarterly`.
 
